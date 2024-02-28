@@ -14,11 +14,6 @@ apt-get install expect -y
 apt-get install dos2unix -y
 apt-get install tree -y 
 
-#apt-get install python-pip -y
-
-# Installing unzip
-# apt-get install unzip -y 
-
 # Cleanup unneded packages
 apt-get -y autoremove
 

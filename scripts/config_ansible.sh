@@ -29,7 +29,7 @@ chmod +x ~/scripts/ssh_pass.sh
 ~/scripts/ssh_pass.sh $USER $PASSWORD "nginx.test" 
 ~/scripts/ssh_pass.sh $USER $PASSWORD "db.test" 
 
-# ansible-playbook ~/artefacts/playbooks/install_nginx.yaml
-# ansible-playbook ~/artefacts/playbooks/install_db.yaml
+# ansible-playbook ~/playbooks/install_nginx.yaml
+# ansible-playbook ~/playbooks/install_db.yaml
 
 

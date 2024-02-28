@@ -86,8 +86,8 @@ Vagrant.configure("2") do |config|
     ansible_vm.vm.network "forwarded_port", guest: 3306, host: 3307 
     ansible_vm.vm.network "private_network", ip: "192.168.50.12"
     ansible_vm.vm.provision :shell, path: "scripts/install_ansible.sh"  
-    ansible_vm.vm.provision :file, source: "scripts/config_ansible.sh" , destination: "/home/vagrant/"
-    ansible_vm.vm.provision :shell, privileged: false, path: "scripts/config_ansible.sh" 
+    ansible_vm.vm.provision :file, source: "./." , destination: "/home/vagrant/"
+    ansible_vm.vm.provision :shell, privileged: false, path: "./scripts/config_ansible.sh" 
   end
   # 
   # View the documentation for the provider you are using for more
