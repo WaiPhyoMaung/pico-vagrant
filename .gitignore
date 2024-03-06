@@ -1,1 +1,5 @@
 .vagrant
+artefacts/.cache/motd.legal-displayed
+artefacts/.ssh/id_rsa
+artefacts/.ssh/id_rsa.pub
+artefacts/.ssh/known_hosts

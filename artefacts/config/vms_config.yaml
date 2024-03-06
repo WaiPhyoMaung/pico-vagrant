@@ -1,0 +1,31 @@
+vms:
+  - name: nginx
+    box: ubuntu/trusty64
+    hostname: nginx.test
+    ip: 192.168.50.10
+    # cpu: 2
+    # ram: 4096
+    synced_folder:
+      source: ./www
+      destination: /var/www/html
+
+  - name: db
+    box: ubuntu/trusty64
+    hostname: db.test
+    ip: 192.168.50.11
+    forwarded_port:
+      guest: 3304
+      host: 3305
+
+  - name: ansible
+    box: ubuntu/trusty64
+    hostname: ansible.test
+    ip: 192.168.50.12
+    forwarded_port:
+      guest: 3306
+      host: 3307
+    ansible_install:
+      installation_script: ./artefacts/scripts/install_ansible.sh
+      ssh_key_less_auth: ./artefacts/scripts/ssh_pass.sh
+      source: ./artefacts/.
+      destination: /home/vagrant/
