@@ -1,29 +1,48 @@
 Vagrant.configure("2") do |config|
- 
-  # **VM for Nginx**
-  config.vm.define "nginx" do |nginx_vm|
-    nginx_vm.vm.box = "ubuntu/trusty64"  # Adjust if needed
-    nginx_vm.vm.network "private_network", ip: "192.168.50.10"  
-    nginx_vm.vm.synced_folder "./www", "/var/www/html"
-    # nginx_vm.vm.provision :shell, path: "scripts/install_nginx.sh"    
-  end
+  # Read VM data from the configuration file
+  vm_data = YAML.load_file("./artefacts/config/vms_config.yaml")
 
-  # **VM for DB**
-  config.vm.define "db" do |db_vm|
-    db_vm.vm.box = "ubuntu/trusty64"  # Adjust if needed
-    db_vm.vm.network "forwarded_port", guest: 3304, host: 3305 
-    db_vm.vm.network "private_network", ip: "192.168.50.11"  
-    # db_vm.vm.provision :shell, path: "scripts/install_mysql.sh"    
-  end
+  # Iterate through each VM definition
+  vm_data["vms"].each do |vm|
+    # Define VM in Vagrant configuration
+    config.vm.define vm["name"].to_sym do |v|
+      v.vm.box = vm["box"]
+      v.vm.hostname = vm["hostname"]
+      v.vm.network "private_network", ip: vm["ip"]
 
-  # **VM for Ansible**
-  config.vm.define "ansible" do |ansible_vm|
-    ansible_vm.vm.box = "ubuntu/trusty64"  # Adjust if needed
-    ansible_vm.vm.network "forwarded_port", guest: 3306, host: 3307 
-    ansible_vm.vm.network "private_network", ip: "192.168.50.12"
-    ansible_vm.vm.provision :shell, path: "scripts/install_ansible.sh"  
-    ansible_vm.vm.provision :file, source: "./." , destination: "/home/vagrant/"
-    ansible_vm.vm.provision :shell, privileged: false, path: "./scripts/config_ansible.sh" 
+      if vm["cpu"] || vm["ram"]
+        v.customize ["modifyvm", :id, "--natdnshostresolver1", "on"]
+        if vm["cpu"]
+          v.cpus = vm['cpu']
+        end
+        if vm["ram"]
+          v.memory = vm["ram"]
+        end
+      end
+
+      # Handle synced_folder if present
+      if vm["synced_folder"]
+        v.vm.synced_folder vm["synced_folder"]["source"], vm["synced_folder"]["destination"]
+      end
+
+      # Handle forwarded_port if present
+      if vm["forwarded_port"]
+        v.vm.network "forwarded_port", guest: vm["forwarded_port"]["guest"], host: vm["forwarded_port"]["host"]
+      end
+
+      if vm["ansible_install"]
+        v.vm.provision :shell, path: vm["ansible_install"]["installation_script"]           
+        # v.vm.synced_folder vm["ansible_install"]["source"], vm["ansible_install"]["destination"]       
+        v.vm.provision :file, source: vm["ansible_install"]["source"] , destination: vm["ansible_install"]["destination"]         
+    end  
+
+      # # Handle provisioning_scripts if present
+      # if vm["provisioning_scripts"]
+      #   vm["provisioning_scripts"].each do |script|
+      #     v.vm.provision :shell, path: script
+      #     v.vm.provision :shell, privileged: false, path: script
+      #   end
+      # end  
+    end
   end
-  
 end
