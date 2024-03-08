@@ -3,6 +3,7 @@ vms:
     box: ubuntu/trusty64
     hostname: nginx.test
     ip: 192.168.50.10
+    # gui: true
     # cpu: 2
     # ram: 4096
     synced_folder:
@@ -28,4 +29,4 @@ vms:
       installation_script: ./artefacts/scripts/install_ansible.sh
       ssh_key_less_auth: ./artefacts/scripts/ssh_pass.sh
       source: ./artefacts/.
-      destination: /home/vagrant/
+      destination: /home/vagrant/artefacts/

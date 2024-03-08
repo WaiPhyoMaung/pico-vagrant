@@ -10,13 +10,12 @@ Vagrant.configure("2") do |config|
       v.vm.hostname = vm["hostname"]
       v.vm.network "private_network", ip: vm["ip"]
 
-      if vm["cpu"] || vm["ram"]
-        v.customize ["modifyvm", :id, "--natdnshostresolver1", "on"]
-        if vm["cpu"]
-          v.cpus = vm['cpu']
-        end
-        if vm["ram"]
-          v.memory = vm["ram"]
+      if vm["cpu"] || vm["ram"] || vm["gui"]
+        v.vm.provider "virtualbox" do |vb|
+          v.customize ["modifyvm", :id, "--natdnshostresolver1", "on"]
+          v.gui = vm["gui"] if vm["gui"]
+          v.cpus = vm["cpu"] if vm["cpu"]
+          v.memory = vm["ram"] if vm["ram"]
         end
       end
 
@@ -31,9 +30,9 @@ Vagrant.configure("2") do |config|
       end
 
       if vm["ansible_install"]
-        v.vm.provision :file, source: vm["ansible_install"]["source"] , destination: vm["ansible_install"]["destination"]         
+        # v.vm.provision :file, source: vm["ansible_install"]["source"] , destination: vm["ansible_install"]["destination"]         
+        v.vm.synced_folder vm["ansible_install"]["source"], vm["ansible_install"]["destination"]       
         v.vm.provision :shell, path: vm["ansible_install"]["installation_script"]           
-        # v.vm.synced_folder vm["ansible_install"]["source"], vm["ansible_install"]["destination"]       
     end  
 
       # # Handle provisioning_scripts if present
